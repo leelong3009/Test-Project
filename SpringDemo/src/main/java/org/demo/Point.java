@@ -1,8 +1,16 @@
 package org.demo;
 
-public class Point {
+import org.springframework.beans.factory.BeanNameAware;
+
+public class Point implements BeanNameAware{
 	private int x;
 	private int y;
+	private String beanName;
+	
+	
+	public String getBeanName() {
+		return beanName;
+	}
 	public int getX() {
 		return x;
 	}
@@ -25,5 +33,17 @@ public class Point {
 	@Override
 	public String toString(){
 		return "x: " + x + " y: " +y;
+	}
+	
+	public void myInit(){
+		System.out.println(getBeanName() + " bean created");
+	}
+	
+	public void myDestroy(){
+		System.out.println(getBeanName() + " bean destroyed");
+	}
+
+	public void setBeanName(String name) {
+		this.beanName = name;
 	}
 }
