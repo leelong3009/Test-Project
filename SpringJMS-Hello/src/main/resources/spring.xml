@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jms="http://www.springframework.org/schema/jms"
+	xmlns:amq="http://activemq.apache.org/schema/core"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd 
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd
+	http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd">
+	
+	<!-- Connection Factory -->
+	<bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<property name="brokerURL" value="tcp://localhost:61616"></property>
+	</bean>
+	<!-- <amq:connectionFactory id="connectionFactory" brokerURL="tcp://localhost:61616" /> -->
+	
+	<!-- Queue -->
+	<bean id="destination" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="testQueue" />
+	</bean>
+	
+	<bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="connectionFactory" />
+		<property name="defaultDestination" ref="destination"></property>
+	</bean>
+	
+	<bean id="messageSender" class="org.demo.jms.MessageSender">
+		<property name="jmsTemplate" ref="jmsTemplate" />
+	</bean>
+	
+	<bean id="messageListener" class="org.demo.jms.MessageListener" />
+	
+	<jms:listener-container connection-factory="connectionFactory">
+		<jms:listener destination="testQueue" ref="messageListener" method="onMessage"/>
+	</jms:listener-container>
+</beans>
